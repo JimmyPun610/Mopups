@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel;
 using Mopups.Animations.Base;
 using Mopups.Enums;
 using Mopups.Pages;
@@ -25,62 +26,68 @@ public class MoveAnimation : FadeBackgroundAnimation
         EasingOut = Easing.SinIn;
     }
 
-    public override void Preparing(View content, PopupPage page)
+    public override void Preparing(View? content, PopupPage page)
     {
         base.Preparing(content, page);
 
         HidePage(page);
 
-        if (content == null) return;
-
-        UpdateDefaultTranslations(content);
+        if (content is not null)
+        {
+            UpdateDefaultTranslations(content);
+        }
     }
 
-    public override void Disposing(View content, PopupPage page)
+    public override void Disposing(View? content, PopupPage page)
     {
         base.Disposing(content, page);
 
         ShowPage(page);
 
-        if (content == null) return;
-
-        content.TranslationX = _defaultTranslationX;
-        content.TranslationY = _defaultTranslationY;
+        if (content is not null)
+        {
+            content.TranslationX = _defaultTranslationX;
+            content.TranslationY = _defaultTranslationY;
+        }
     }
 
-    public override Task Appearing(View content, PopupPage page)
+    public override Task Appearing(View? content, PopupPage page)
     {
         var taskList = new List<Task>
         {
             base.Appearing(content, page)
         };
 
-        if (content != null)
+        if (content is not null)
         {
             var topOffset = GetTopOffset(content, page);
             var leftOffset = GetLeftOffset(content, page);
 
-            if (PositionIn == MoveAnimationOptions.Top)
+            switch (PositionIn)
             {
-                content.TranslationY = -topOffset;
-            }
-            else if (PositionIn == MoveAnimationOptions.Bottom)
-            {
-                content.TranslationY = topOffset;
-            }
-            else if (PositionIn == MoveAnimationOptions.Left)
-            {
-                content.TranslationX = -leftOffset;
-            }
-            else if (PositionIn == MoveAnimationOptions.Right)
-            {
-                content.TranslationX = leftOffset;
+                case MoveAnimationOptions.Top:
+                    content.TranslationY = -topOffset;
+                    break;
+                case MoveAnimationOptions.Bottom:
+                    content.TranslationY = topOffset;
+                    break;
+                case MoveAnimationOptions.Left:
+                    content.TranslationX = -leftOffset;
+                    break;
+                case MoveAnimationOptions.Right:
+                    content.TranslationX = leftOffset;
+                    break;
+                case MoveAnimationOptions.Center:
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(nameof(PositionIn), (int)PositionIn,
+                        typeof(MoveAnimationOptions));
             }
 
             content.HeightRequest = content.Height;
             content.WidthRequest = content.Width;
 
-            taskList.Add(content.TranslateTo(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
+            taskList.Add(content.TranslateToAsync(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
         }
 
         ShowPage(page);
@@ -88,36 +95,39 @@ public class MoveAnimation : FadeBackgroundAnimation
         return Task.WhenAll(taskList);
     }
 
-    public override Task Disappearing(View content, PopupPage page)
+    public override Task Disappearing(View? content, PopupPage page)
     {
         var taskList = new List<Task>
         {
             base.Disappearing(content, page)
         };
+        
+        if (content is null)
+            return Task.WhenAll(taskList);
 
-        if (content != null)
+        UpdateDefaultTranslations(content);
+
+        var topOffset = GetTopOffset(content, page);
+        var leftOffset = GetLeftOffset(content, page);
+
+        switch (PositionOut)
         {
-            UpdateDefaultTranslations(content);
-
-            var topOffset = GetTopOffset(content, page);
-            var leftOffset = GetLeftOffset(content, page);
-
-            if (PositionOut == MoveAnimationOptions.Top)
-            {
-                taskList.Add(content.TranslateTo(_defaultTranslationX, -topOffset, DurationOut, EasingOut));
-            }
-            else if (PositionOut == MoveAnimationOptions.Bottom)
-            {
-                taskList.Add(content.TranslateTo(_defaultTranslationX, topOffset, DurationOut, EasingOut));
-            }
-            else if (PositionOut == MoveAnimationOptions.Left)
-            {
-                taskList.Add(content.TranslateTo(-leftOffset, _defaultTranslationY, DurationOut, EasingOut));
-            }
-            else if (PositionOut == MoveAnimationOptions.Right)
-            {
-                taskList.Add(content.TranslateTo(leftOffset, _defaultTranslationY, DurationOut, EasingOut));
-            }
+            case MoveAnimationOptions.Top:
+                taskList.Add(content.TranslateToAsync(_defaultTranslationX, -topOffset, DurationOut, EasingOut));
+                break;
+            case MoveAnimationOptions.Bottom:
+                taskList.Add(content.TranslateToAsync(_defaultTranslationX, topOffset, DurationOut, EasingOut));
+                break;
+            case MoveAnimationOptions.Left:
+                taskList.Add(content.TranslateToAsync(-leftOffset, _defaultTranslationY, DurationOut, EasingOut));
+                break;
+            case MoveAnimationOptions.Right:
+                taskList.Add(content.TranslateToAsync(leftOffset, _defaultTranslationY, DurationOut, EasingOut));
+                break;
+            case MoveAnimationOptions.Center:
+                break;
+            default:
+                throw new InvalidEnumArgumentException(nameof(PositionOut), (int)PositionOut, typeof(MoveAnimationOptions));
         }
 
         return Task.WhenAll(taskList);

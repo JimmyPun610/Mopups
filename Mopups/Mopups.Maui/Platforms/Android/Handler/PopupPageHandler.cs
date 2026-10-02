@@ -1,12 +1,12 @@
 ﻿using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using Mopups.Platforms.Android.Renderers;
+using Mopups.Platforms.Android.Handler;
 
-namespace Mopups.Pages;
+namespace Mopups.Platforms.Android.Handler;
 
-public class PopupPageHandler : PageHandler
+public sealed class PopupPageHandler : PageHandler
 {
-    public bool _disposed;
+    private bool _disposed;
 
     public PopupPageHandler()
     {

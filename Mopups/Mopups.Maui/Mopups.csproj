@@ -2,8 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 
-		<TargetFrameworks>net10.0;net10.0-maccatalyst;net10.0-ios;net10.0-android</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFramework>net10.0-android</TargetFramework>
 
 		<!-- iOS, Android, MacCatalyst -->
 		<UseMaui>true</UseMaui>
@@ -16,11 +15,8 @@
 		<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
 	</PropertyGroup>
 	<PropertyGroup>
-		<InvariantGlobalization Condition="$(TargetFramework.Contains('-maccatalyst'))">true</InvariantGlobalization>
 		<UseInterpreter Condition="$(TargetFramework.Contains('-android'))">False</UseInterpreter>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -34,10 +30,6 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PublishAot>True</PublishAot>
 	</PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-  </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -56,27 +48,11 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
 	  <Deterministic>False</Deterministic>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-maccatalyst|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android33.0|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-windows10.0.19041.0|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android36.0|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
 	  <Deterministic>False</Deterministic>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-ios|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-maccatalyst|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-windows10.0.19041.0|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
 	  <Deterministic>False</Deterministic>
 	</PropertyGroup>

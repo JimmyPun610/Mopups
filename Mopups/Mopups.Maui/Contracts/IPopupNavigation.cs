@@ -1,7 +1,7 @@
 ﻿using Mopups.Events;
 using Mopups.Pages;
 
-namespace Mopups.Interfaces;
+namespace Mopups.Contracts;
 
 public interface IPopupNavigation
 {

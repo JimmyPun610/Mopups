@@ -47,10 +47,10 @@ public class UintTypeConverter : TypeConverter
 }
 public interface IPopupAnimation
 {
-    void Preparing(View content, PopupPage page);
-    void Disposing(View content, PopupPage page);
-    Task Appearing(View content, PopupPage page);
-    Task Disappearing(View content, PopupPage page);
+    void Preparing(View? content, PopupPage page);
+    void Disposing(View? content, PopupPage page);
+    Task Appearing(View? content, PopupPage page);
+    Task Disappearing(View? content, PopupPage page);
 }
 public abstract class BaseAnimation : IPopupAnimation
 {

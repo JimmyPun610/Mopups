@@ -1,5 +1,7 @@
 ﻿using Microsoft.Maui.LifecycleEvents;
 using Mopups.Pages;
+using Mopups.Platforms.Android.Handler;
+using Mopups.Platorms.Android.Impl;
 
 namespace Mopups.Hosting;
 
@@ -21,7 +23,7 @@ public static class AppHostBuilderExtensions
 #if ANDROID
                 lifecycle.AddAndroid(d =>
                 {
-                    d.OnBackPressed(activity => Droid.Implementation.AndroidMopups.SendBackPressed());
+                    d.OnBackPressed(activity => AndroidMopups.SendBackPressed());
                 });
 
 #endif
@@ -33,9 +35,6 @@ public static class AppHostBuilderExtensions
 #endif
 #if IOS
                 handlers.AddHandler(typeof(PopupPage), typeof(Platforms.iOS.PopupPageHandler));
-#endif
-#if WINDOWS
-                handlers.AddHandler(typeof(PopupPage), typeof(Platforms.Windows.PopupPageHandler));
 #endif
             });
         return builder;
@@ -57,7 +56,7 @@ public static class AppHostBuilderExtensions
                 lifecycle.AddAndroid(d =>
                 {
                     
-                    d.OnBackPressed(activity => Droid.Implementation.AndroidMopups.SendBackPressed(backPressHandler));
+                    d.OnBackPressed(_ => AndroidMopups.SendBackPressed(backPressHandler));
                 });
 #endif
             })
@@ -68,9 +67,6 @@ public static class AppHostBuilderExtensions
 #endif
 #if IOS
                 handlers.AddHandler(typeof(PopupPage), typeof(Platforms.iOS.PopupPageHandler));
-#endif
-#if WINDOWS
-                handlers.AddHandler(typeof(PopupPage), typeof(Platforms.Windows.PopupPageHandler));
 #endif
             });
         return builder;

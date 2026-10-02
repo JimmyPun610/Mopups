@@ -1,6 +1,6 @@
 ﻿using Mopups.Pages;
 
-namespace Mopups.Interfaces;
+namespace Mopups.Contracts;
 
 public interface IPopupPlatform
 {

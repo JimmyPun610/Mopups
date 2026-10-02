@@ -8,14 +8,14 @@ public abstract class FadeBackgroundAnimation : BaseAnimation
 
     public bool HasBackgroundAnimation { get; set; } = true;
 
-    public override void Preparing(View content, PopupPage page)
+    public override void Preparing(View? content, PopupPage page)
     {
         _backgroundColor = page.BackgroundColor;
 
         page.BackgroundColor = GetColor(0);
     }
 
-    public override void Disposing(View content, PopupPage page)
+    public override void Disposing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation)
         {
@@ -23,24 +23,25 @@ public abstract class FadeBackgroundAnimation : BaseAnimation
         }
     }
 
-    public override Task Appearing(View content, PopupPage page)
+    public override Task Appearing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation)
         {
             TaskCompletionSource<bool> taskSource = new();
 
-            void callback(double d) => page.BackgroundColor = GetColor(d);
-            void finishedAnimation(double d, bool b) => taskSource.SetResult(true);
-
-            page.Animate(name: "backgroundFade", callback: callback, start: 0, end: _backgroundColor?.Alpha ?? 0, length: DurationIn, finished: finishedAnimation);
+            page.Animate(name: "backgroundFade", callback: Callback, start: 0, end: _backgroundColor?.Alpha ?? 0, length: DurationIn, finished: FinishedAnimation);
 
             return taskSource.Task;
+
+            void Callback(double d) => page.BackgroundColor = GetColor(d);
+
+            void FinishedAnimation(double d, bool b) => taskSource.SetResult(true);
         }
 
         return Task.CompletedTask;
     }
 
-    public override Task Disappearing(View content, PopupPage page)
+    public override Task Disappearing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation)
         {
@@ -48,12 +49,12 @@ public abstract class FadeBackgroundAnimation : BaseAnimation
 
             _backgroundColor = page.BackgroundColor;
 
-            void callback(double d) => page.BackgroundColor = GetColor(d);
-            void finishedAnimation(double d, bool b) => taskSource.SetResult(true);
-
-            page.Animate("backgroundFade", callback, _backgroundColor.Alpha, 0, length: DurationOut, finished: finishedAnimation);
+            page.Animate("backgroundFade", Callback, _backgroundColor.Alpha, 0, length: DurationOut, finished: FinishedAnimation);
 
             return taskSource.Task;
+
+            void Callback(double d) => page.BackgroundColor = GetColor(d);
+            void FinishedAnimation(double d, bool b) => taskSource.SetResult(true);
         }
 
         return Task.CompletedTask;

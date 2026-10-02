@@ -9,21 +9,21 @@ public class FadeAnimation : BaseAnimation
 
     public bool HasBackgroundAnimation { get; set; } = true;
 
-    public override void Preparing(View content, PopupPage page)
+    public override void Preparing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation)
         {
             _defaultOpacity = page.Opacity;
             page.Opacity = 0;
         }
-        else if (content != null)
+        else if (content is not null)
         {
             _defaultOpacity = content.Opacity;
             content.Opacity = 0;
         }
     }
 
-    public override void Disposing(View content, PopupPage page)
+    public override void Disposing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation || content != null)
         {
@@ -31,21 +31,21 @@ public class FadeAnimation : BaseAnimation
         }
     }
 
-    public override Task Appearing(View content, PopupPage page)
+    public override Task Appearing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation)
         {
-            return page.FadeTo(1, DurationIn, EasingIn);
+            return page.FadeToAsync(1, DurationIn, EasingIn);
         }
-        if (content != null)
+        if (content is not null)
         {
-            return content.FadeTo(1, DurationIn, EasingIn);
+            return content.FadeToAsync(1, DurationIn, EasingIn);
         }
 
         return Task.CompletedTask;
     }
 
-    public override Task Disappearing(View content, PopupPage page)
+    public override Task Disappearing(View? content, PopupPage page)
     {
         _defaultOpacity = page.Opacity;
         if (double.IsNaN(_defaultOpacity))
@@ -53,11 +53,11 @@ public class FadeAnimation : BaseAnimation
 
         if (HasBackgroundAnimation)
         {
-            return page.FadeTo(0, DurationOut, EasingOut);
+            return page.FadeToAsync(0, DurationOut, EasingOut);
         }
-        if (content != null)
+        if (content is not null)
         {
-            return content.FadeTo(0, DurationOut, EasingOut);
+            return content.FadeToAsync(0, DurationOut, EasingOut);
         }
 
         return Task.CompletedTask;

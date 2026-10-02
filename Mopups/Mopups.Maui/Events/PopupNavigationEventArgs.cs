@@ -2,15 +2,9 @@
 
 namespace Mopups.Events;
 
-public class PopupNavigationEventArgs : EventArgs
+public class PopupNavigationEventArgs(PopupPage page, bool isAnimated) : EventArgs
 {
-    public PopupPage Page { get; }
+    public PopupPage Page { get; } = page;
 
-    public bool IsAnimated { get; }
-
-    public PopupNavigationEventArgs(PopupPage page, bool isAnimated)
-    {
-        Page = page;
-        IsAnimated = isAnimated;
-    }
+    public bool IsAnimated { get; } = isAnimated;
 }

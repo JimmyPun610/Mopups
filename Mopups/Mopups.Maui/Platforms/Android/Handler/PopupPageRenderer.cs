@@ -1,33 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Android.Content;
-using Android.Graphics;
-using Android.Views;
-
+﻿using Android.Content;
+using Android.OS;
 using Microsoft.Maui.Platform;
-
-using AndroidGraphics = Android.Graphics; //Weird conflict with Microsoft namespace?
-using AndroidView = Android.Views;
-
 using Mopups.Droid.Gestures;
 using Mopups.Pages;
-using Android.OS;
+using AndroidGraphics = Android.Graphics; //Weird conflict with Microsoft namespace?
+using AndroidView = Android.Views;
 using Rect = Microsoft.Maui.Graphics.Rect;
 
-namespace Mopups.Platforms.Android.Renderers;
+namespace Mopups.Platforms.Android.Handler;
 
 public class PopupPageRenderer : ContentViewGroup
 {
-    public PopupPageHandler PopupHandler;
+    public PopupPageHandler? PopupHandler;
 
     private readonly MopupGestureDetectorListener _gestureDetectorListener;
-    private readonly GestureDetector _gestureDetector;
-    private DateTime _downTime;
-    private Microsoft.Maui.Graphics.Point _downPosition;
+    private readonly AndroidView.GestureDetector _gestureDetector;
     private bool _disposed;
 
     public PopupPageRenderer(Context context) : base(context)
@@ -35,7 +22,7 @@ public class PopupPageRenderer : ContentViewGroup
         _gestureDetectorListener = new MopupGestureDetectorListener();
         _gestureDetectorListener.Clicked += OnBackgroundClick;
 
-        _gestureDetector = new GestureDetector(Context, _gestureDetectorListener);
+        _gestureDetector = new AndroidView.GestureDetector(Context, _gestureDetectorListener);
     }
 
     protected override void Dispose(bool disposing)
@@ -119,7 +106,7 @@ public class PopupPageRenderer : ContentViewGroup
             (PopupHandler?.VirtualView as PopupPage)?.SetValue(PopupPage.KeyboardOffsetProperty, keyboardOffset);
 
             if (changed)
-                (PopupHandler?.VirtualView as PopupPage)?.Layout(new Rect(Context.FromPixels(left), Context.FromPixels(top), Context.FromPixels(right), Context.FromPixels(bottom)));
+                (PopupHandler?.VirtualView as PopupPage)?.Arrange(new Rect(Context.FromPixels(left), Context.FromPixels(top), Context.FromPixels(right), Context.FromPixels(bottom)));
             else
                 (PopupHandler?.VirtualView as PopupPage)?.ForceLayout();
             base.OnLayout(changed, left, top, right, bottom);
@@ -156,17 +143,17 @@ public class PopupPageRenderer : ContentViewGroup
         base.OnDetachedFromWindow();
     }
 
-    protected override void OnWindowVisibilityChanged(ViewStates visibility)
+    protected override void OnWindowVisibilityChanged(AndroidView.ViewStates visibility)
     {
         base.OnWindowVisibilityChanged(visibility);
 
         // It is needed because a size of popup has not updated on Android 7+. See #209
-        if (visibility == ViewStates.Visible)
+        if (visibility == AndroidView.ViewStates.Visible)
             RequestLayout();
     }
 
 
-    public override bool DispatchTouchEvent(MotionEvent e)
+    public override bool DispatchTouchEvent(AndroidView.MotionEvent e)
     {
         if (_disposed)
         {
@@ -182,8 +169,7 @@ public class PopupPageRenderer : ContentViewGroup
         return true;
     }
 
-
-    public override bool OnTouchEvent(MotionEvent e)
+    public override bool OnTouchEvent(AndroidView.MotionEvent? e)
     {
         try
         {
@@ -206,14 +192,34 @@ public class PopupPageRenderer : ContentViewGroup
 
             return baseValue;
         }
-        catch (Exception f)
+        catch (Exception)
         {
+            // TODO ignored
         }
 
         return base.OnTouchEvent(e);
     }
 
-    private bool IsInRegion(float x, float y, AndroidView.View v)
+    private void OnBackgroundClick(object? sender, AndroidView.MotionEvent e)
+    {
+        if (ChildCount == 0)
+            return;
+
+        var child = PopupHandler?.PlatformView.GetChildAt(0);
+
+        if (child is not null)
+        {
+            var isInRegion = IsInRegion(e.RawX, e.RawY, child);
+
+            if (isInRegion == false)
+            {
+                if (PopupHandler?.VirtualView is PopupPage popupPage)
+                    popupPage.SendBackgroundClick();
+            }
+        }
+    }
+
+    private static bool IsInRegion(float x, float y, AndroidView.View v)
     {
         var mCoordBuffer = new int[2];
 
@@ -222,27 +228,5 @@ public class PopupPageRenderer : ContentViewGroup
                mCoordBuffer[1] + v.Height > y &&   // bottom edge
                mCoordBuffer[0] < x &&              // left edge
                mCoordBuffer[1] < y;                // top edge
-    }
-
-    private async void OnBackgroundClick(object sender, MotionEvent e)
-    {
-        if (ChildCount == 0)
-            return;
-
-        if (PopupHandler != null)
-        {
-            var child = PopupHandler.PlatformView.GetChildAt(0);
-
-            if (child != null)
-            {
-                var isInRegion = IsInRegion(e.RawX, e.RawY, child);
-
-                if (!isInRegion)
-                {
-                    if (PopupHandler.VirtualView is PopupPage popupPage)
-                        popupPage.SendBackgroundClick();
-                }
-            }
-        }
     }
 }

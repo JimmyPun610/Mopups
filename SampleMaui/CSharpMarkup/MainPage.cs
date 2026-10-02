@@ -57,7 +57,7 @@ public partial class MainPage : ContentPage
                             TextColor = Color.FromRgb(255, 255, 255),
                             Command = new AsyncCommand(async () =>
                                                        {
-                                                           await Navigation.PushAsync(new PreBakedExample());
+                                                           await Navigation.PushAsync(new PopupPage());
                                                        })
                         };
         mainStackLayout.Add(newButton);

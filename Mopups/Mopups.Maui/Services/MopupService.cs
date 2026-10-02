@@ -1,16 +1,15 @@
-﻿using Mopups.Interfaces;
+﻿using Mopups.Contracts;
 
 namespace Mopups.Services;
 
 public static class MopupService
 {
-    static IPopupNavigation? _customNavigation;
-    static readonly Lazy<IPopupNavigation> implementation = new(() => CreatePopupNavigation(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+    private static readonly Lazy<IPopupNavigation> Implementation = new(CreatePopupNavigation, LazyThreadSafetyMode.PublicationOnly);
 
     /// <summary>
     /// Gets if the plugin is supported on the current platform.
     /// </summary>
-    public static bool IsSupported => implementation.Value != null;
+    public static bool IsSupported => Implementation.Value != null;
 
     /// <summary>
     /// Current plugin implementation to use
@@ -19,31 +18,13 @@ public static class MopupService
     {
         get
         {
-            IPopupNavigation lazyEvalPopupNavigation = _customNavigation ?? implementation.Value;
+            var lazyEvalPopupNavigation = Implementation.Value;
 
-            if (lazyEvalPopupNavigation == null)
-            {
-                throw NotImplementedInReferenceAssembly();
-            }
-
-            return lazyEvalPopupNavigation;
+            return lazyEvalPopupNavigation ?? throw NotImplementedInReferenceAssembly();
         }
     }
 
-    public static void SetInstance(IPopupNavigation instance)
-    {
-        _customNavigation = instance;
-    }
-
-    public static void RestoreDefaultInstance()
-    {
-        _customNavigation = null;
-    }
-
-    static IPopupNavigation CreatePopupNavigation()
-    {
-        return new PopupNavigation();
-    }
+    private static PopupNavigation CreatePopupNavigation() => new PopupNavigation();
 
     internal static Exception NotImplementedInReferenceAssembly() =>
         new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");

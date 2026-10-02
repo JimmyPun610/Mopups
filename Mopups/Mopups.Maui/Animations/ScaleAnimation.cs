@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel;
 using Mopups.Enums;
 using Mopups.Pages;
 
@@ -30,7 +31,7 @@ public class ScaleAnimation : FadeAnimation
         if (PositionOut != MoveAnimationOptions.Center) DurationOut = 500;
     }
 
-    public override void Preparing(View content, PopupPage page)
+    public override void Preparing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation) base.Preparing(content, page);
 
@@ -43,13 +44,14 @@ public class ScaleAnimation : FadeAnimation
         if (!HasBackgroundAnimation) content.Opacity = 0;
     }
 
-    public override void Disposing(View content, PopupPage page)
+    public override void Disposing(View? content, PopupPage page)
     {
         if (HasBackgroundAnimation) base.Disposing(content, page);
 
         ShowPage(page);
 
-        if (content == null) return;
+        if (content is null) 
+            return;
 
         content.Scale = _defaultScale;
         content.Opacity = _defaultOpacity;
@@ -57,38 +59,39 @@ public class ScaleAnimation : FadeAnimation
         content.TranslationY = _defaultTranslationY;
     }
 
-    public async override Task Appearing(View content, PopupPage page)
+    public override async Task Appearing(View? content, PopupPage page)
     {
-        var taskList = new List<Task>();
+        var taskList = new List<Task> { base.Appearing(content, page) };
 
-        taskList.Add(base.Appearing(content, page));
-
-        if (content != null)
+        if (content is not null)
         {
             var topOffset = GetTopOffset(content, page) * ScaleIn;
             var leftOffset = GetLeftOffset(content, page) * ScaleIn;
 
             taskList.Add(Scale(content, EasingIn, ScaleIn, _defaultScale, true));
 
-            if (PositionIn == MoveAnimationOptions.Top)
+            switch (PositionIn)
             {
-                content.TranslationY = -topOffset;
-                taskList.Add(content.TranslateTo(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
-            }
-            else if (PositionIn == MoveAnimationOptions.Bottom)
-            {
-                content.TranslationY = topOffset;
-                taskList.Add(content.TranslateTo(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
-            }
-            else if (PositionIn == MoveAnimationOptions.Left)
-            {
-                content.TranslationX = -leftOffset;
-                taskList.Add(content.TranslateTo(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
-            }
-            else if (PositionIn == MoveAnimationOptions.Right)
-            {
-                content.TranslationX = leftOffset;
-                taskList.Add(content.TranslateTo(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
+                case MoveAnimationOptions.Top:
+                    content.TranslationY = -topOffset;
+                    taskList.Add(content.TranslateToAsync(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
+                    break;
+                case MoveAnimationOptions.Bottom:
+                    content.TranslationY = topOffset;
+                    taskList.Add(content.TranslateToAsync(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
+                    break;
+                case MoveAnimationOptions.Left:
+                    content.TranslationX = -leftOffset;
+                    taskList.Add(content.TranslateToAsync(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
+                    break;
+                case MoveAnimationOptions.Right:
+                    content.TranslationX = leftOffset;
+                    taskList.Add(content.TranslateToAsync(_defaultTranslationX, _defaultTranslationY, DurationIn, EasingIn));
+                    break;
+                case MoveAnimationOptions.Center:
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(nameof(PositionIn), (int)PositionIn, typeof(MoveAnimationOptions));
             }
         }
 
@@ -97,13 +100,11 @@ public class ScaleAnimation : FadeAnimation
         await Task.WhenAll(taskList);
     }
 
-    public async override Task Disappearing(View content, PopupPage page)
+    public override async Task Disappearing(View? content, PopupPage page)
     {
-        var taskList = new List<Task>();
+        var taskList = new List<Task> { base.Disappearing(content, page) };
 
-        taskList.Add(base.Disappearing(content, page));
-
-        if (content != null)
+        if (content is not null)
         {
             UpdateDefaultProperties(content);
 
@@ -112,28 +113,31 @@ public class ScaleAnimation : FadeAnimation
 
             taskList.Add(Scale(content, EasingOut, _defaultScale, ScaleOut, false));
 
-            if (PositionOut == MoveAnimationOptions.Top)
+            switch (PositionOut)
             {
-                taskList.Add(content.TranslateTo(_defaultTranslationX, -topOffset, DurationOut, EasingOut));
-            }
-            else if (PositionOut == MoveAnimationOptions.Bottom)
-            {
-                taskList.Add(content.TranslateTo(_defaultTranslationX, topOffset, DurationOut, EasingOut));
-            }
-            else if (PositionOut == MoveAnimationOptions.Left)
-            {
-                taskList.Add(content.TranslateTo(-leftOffset, _defaultTranslationY, DurationOut, EasingOut));
-            }
-            else if (PositionOut == MoveAnimationOptions.Right)
-            {
-                taskList.Add(content.TranslateTo(leftOffset, _defaultTranslationY, DurationOut, EasingOut));
+                case MoveAnimationOptions.Top:
+                    taskList.Add(content.TranslateToAsync(_defaultTranslationX, -topOffset, DurationOut, EasingOut));
+                    break;
+                case MoveAnimationOptions.Bottom:
+                    taskList.Add(content.TranslateToAsync(_defaultTranslationX, topOffset, DurationOut, EasingOut));
+                    break;
+                case MoveAnimationOptions.Left:
+                    taskList.Add(content.TranslateToAsync(-leftOffset, _defaultTranslationY, DurationOut, EasingOut));
+                    break;
+                case MoveAnimationOptions.Right:
+                    taskList.Add(content.TranslateToAsync(leftOffset, _defaultTranslationY, DurationOut, EasingOut));
+                    break;
+                case MoveAnimationOptions.Center:
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(nameof(PositionOut), (int)PositionOut, typeof(MoveAnimationOptions));
             }
         }
 
         await Task.WhenAll(taskList);
     }
 
-    private Task Scale(View content, Easing easing, double start, double end, bool isAppearing)
+    private Task<bool> Scale(View content, Easing easing, double start, double end, bool isAppearing)
     {
         var task = new TaskCompletionSource<bool>();
 
