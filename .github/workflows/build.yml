@@ -17,10 +17,11 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # Install explicitly rather than via `dotnet workload restore`, which only installs
-      # what the csproj evaluates to (and misses iOS if a singular <TargetFramework> is present).
+      # MAUI workloads, not the bare platform ones: restore evaluates every TFM, including the
+      # plain net10.0 reference target, and UseMaui needs the MAUI packs there too.
+      # maui-ios / maui-android pull in the ios / android workloads they depend on.
       - name: Install workloads
-        run: dotnet workload install ios android
+        run: dotnet workload install maui-ios maui-android
 
       # The iOS workload pins a minimum Xcode. If the build fails with an Xcode version error,
       # list what the runner has and select a matching one, e.g.:
