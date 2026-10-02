@@ -1,9 +1,9 @@
 ﻿using System.Windows.Input;
-using AsyncAwaitBestPractices;
 using Mopups.Animations;
 using Mopups.Animations.Base;
 using Mopups.Enums;
 using Mopups.Services;
+using Nkraft.CrossUtility.Extensions;
 
 namespace Mopups.Pages;
 
@@ -238,7 +238,7 @@ public class PopupPage : ContentPage
         }
         if (OnBackgroundClicked())
         {
-            MopupService.Instance.RemovePageAsync(this).SafeFireAndForget();
+            MopupService.Instance.RemovePageAsync(this).FireAndForget();
             return true;
         }
         return false;

@@ -35,8 +35,10 @@ internal sealed class iOSMopups : IPopupPlatform
         var scene = hostWindow?.WindowScene ?? ResolveForegroundScene()
             ?? throw new InvalidOperationException("No foreground UIWindowScene is available to host the popup.");
 
-        // Put the popup in the logical tree so app-level StaticResource/DynamicResource lookups resolve.
-        mauiWindow.Page?.AddLogicalChild(page);
+        // 1.3.2 behaviour: set Parent only. Resources and BindingContext still inherit through Parent,
+        // but the host page doesn't list the popup as a child, so the navigation toolbar never treats
+        // it as the current page (hamburger/nav bar disappearing, upstream #158).
+        page.Parent = mauiWindow.Page;
 
         var handler = (IPlatformViewHandler)page.ToHandler(context);
         var pageController = handler.ViewController
@@ -85,7 +87,7 @@ internal sealed class iOSMopups : IPopupPlatform
         window.Dispose();
 
         DisconnectHandlers(page);
-        page.Parent?.RemoveLogicalChild(page);
+        page.Parent = null;
 
         RestoreKeyWindow(hostWindow);
 

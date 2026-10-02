@@ -1,85 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-    
     <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
-
-		<!-- iOS, Android -->
 		<UseMaui>true</UseMaui>
 		<UseMauiEssentials>true</UseMauiEssentials>
 		<SingleProject>true</SingleProject>
-		<PackageId>Mopups</PackageId>
-		<Description>Popups for MAUI</Description>
-		<PackageProjectUrl>https://github.com/LuckyDucko/Mopups</PackageProjectUrl>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageId>Nkraft.Mopups</PackageId>
+		<Description>Fork of Mopups (LuckyDucko/Mopups) maintained for Android and iOS only</Description>
+		<PackageProjectUrl>https://github.com/mr5z/Mopups</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mr5z/Mopups</RepositoryUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 		<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
 	</PropertyGroup>
+  
 	<PropertyGroup>
-		<UseInterpreter Condition="$(TargetFramework.Contains('-android'))">False</UseInterpreter>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Authors>Tyson Hooker,Maksym Koshovyi,Aswin P G, Kirill Lyubimov, Martijn Van Dijk, Shane Neuville</Authors>
-		<Company>$(CompanyName)</Company>
-		<PackageTags>Mopups;Popups;Maui;rg;Xamarin;ios;android;Windows;MacOS;Mopups;Dialogs;macos;windows</PackageTags>
-		<Version>1.4.0</Version>
-		<Title>Mopups (Maui Popups)</Title>
-		<PackageReleaseNotes>Added in several fixes from the community (THANKYOU!)</PackageReleaseNotes>
+    <Authors>Mark L, Tyson Hooker, Maksym Koshovyi, Aswin P G, Kirill Lyubimov, Martijn Van Dijk, Shane Neuville</Authors>
+		<Company>Nkraft</Company>
+		<PackageTags>Nkraft.Mopups;Mopups;Popups;Maui;rg;Xamarin;ios;android;Dialogs</PackageTags>
+		<Version>1.0.0</Version>
+		<Title>Nkraft.Mopups (MAUI Popups)</Title>
+		<PackageReleaseNotes>Mobile-only Mopups</PackageReleaseNotes>
 		<IncludeSymbols>True</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PublishAot>True</PublishAot>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
-		<PlatformTarget>AnyCPU</PlatformTarget>
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-		<Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-		<Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-ios|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android36.0|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-ios|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-	  <Deterministic>False</Deterministic>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-ios|AnyCPU'">
-	  <EnableSGenConc>True</EnableSGenConc>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-ios|AnyCPU'">
-	  <EnableSGenConc>True</EnableSGenConc>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
-	  <AndroidLinkTool>r8</AndroidLinkTool>
-	  <RunAOTCompilation>True</RunAOTCompilation>
-	  <EnableLLVM>True</EnableLLVM>
-	  <AndroidEnableProfiledAot>True</AndroidEnableProfiledAot>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
-	  <RunAOTCompilation>True</RunAOTCompilation>
-	  <EnableLLVM>True</EnableLLVM>
-	  <AndroidEnableProfiledAot>True</AndroidEnableProfiledAot>
-	</PropertyGroup>
+  
 	<ItemGroup>
-		<PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
-    <PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.20" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
+    <PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.110" />
 	</ItemGroup>
+  
 	<ItemGroup>
-	  <None Include="Platforms\iOS\PopupRootViewController.cs" />
+	  <ProjectReference Include="..\..\..\CrossUtility\src\Nkraft.CrossUtility.csproj" />
 	</ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 </Project>

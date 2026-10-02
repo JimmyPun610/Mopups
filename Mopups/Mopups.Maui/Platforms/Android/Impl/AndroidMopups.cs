@@ -2,13 +2,13 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.Activity;
 using AndroidX.Fragment.App;
-using AsyncAwaitBestPractices;
 using Microsoft.Maui.Platform;
 using Mopups.Contracts;
 using Mopups.Extensions;
 using Mopups.Pages;
 using Mopups.Platforms.Android.Handler;
 using Mopups.Services;
+using Nkraft.CrossUtility.Extensions;
 using View = Android.Views.View;
 
 namespace Mopups.Platorms.Android.Impl;
@@ -30,7 +30,7 @@ public class AndroidMopups : IPopupPlatform
 
             if(!isPreventClose)
             {
-                popupNavigationInstance.PopAsync().SafeFireAndForget();
+                popupNavigationInstance.PopAsync().FireAndForget();
             }
 
             return true;
@@ -73,11 +73,9 @@ public class AndroidMopups : IPopupPlatform
             decoreView?.RemoveView(renderer.PlatformView as View);
         }
         renderer.DisconnectHandler(); //?? no clue if works
-        page.Parent?.RemoveLogicalChild(page);
+        page.Parent = null;
 
         return PostAsync(DecorView);
-
-        return Task.CompletedTask;
     }
 
     //! important keeps reference to pages that accessibility has applied to. This is so accessibility can be removed properly when popup is removed. #https://github.com/LuckyDucko/Mopups/issues/93
