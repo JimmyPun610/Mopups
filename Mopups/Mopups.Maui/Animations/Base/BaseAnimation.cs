@@ -68,13 +68,13 @@ public abstract class BaseAnimation : IPopupAnimation
     [TypeConverter(typeof(EasingTypeConverter))]
     public Easing EasingOut { get; set; } = Easing.Linear;
 
-    public abstract void Preparing(View content, PopupPage page);
+    public abstract void Preparing(View? content, PopupPage page);
 
-    public abstract void Disposing(View content, PopupPage page);
+    public abstract void Disposing(View? content, PopupPage page);
 
-    public abstract Task Appearing(View content, PopupPage page);
+    public abstract Task Appearing(View? content, PopupPage page);
 
-    public abstract Task Disappearing(View content, PopupPage page);
+    public abstract Task Disappearing(View? content, PopupPage page);
 
     protected virtual int GetTopOffset(View content, Page page)
     {

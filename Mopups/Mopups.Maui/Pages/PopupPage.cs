@@ -45,14 +45,14 @@ public class PopupPage : ContentPage
     public Thickness SystemPadding
     {
         get => (Thickness)GetValue(SystemPaddingProperty);
-        internal init => SetValue(SystemPaddingProperty, value);
+        internal set => SetValue(SystemPaddingProperty, value);
     }
 
     public static readonly BindableProperty SystemPaddingSidesProperty = BindableProperty.Create(nameof(SystemPaddingSides), typeof(PaddingSide), typeof(PopupPage), PaddingSide.All);
     public PaddingSide SystemPaddingSides
     {
         get => (PaddingSide)GetValue(SystemPaddingSidesProperty);
-        init => SetValue(SystemPaddingSidesProperty, value);
+        set => SetValue(SystemPaddingSidesProperty, value);
     }
 
     public static readonly BindableProperty CloseWhenBackgroundIsClickedProperty = BindableProperty.Create(nameof(CloseWhenBackgroundIsClicked), typeof(bool), typeof(PopupPage), true);
@@ -84,7 +84,7 @@ public class PopupPage : ContentPage
     public double KeyboardOffset
     {
         get => (double)GetValue(KeyboardOffsetProperty);
-        private init => SetValue(KeyboardOffsetProperty, value);
+        private set => SetValue(KeyboardOffsetProperty, value);
     }
 
     public static readonly BindableProperty BackgroundClickedCommandProperty = BindableProperty.Create(nameof(BackgroundClickedCommand), typeof(ICommand), typeof(PopupPage));
