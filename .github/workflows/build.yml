@@ -1,23 +1,31 @@
-name: Build
+# Compiles the iOS target on a GitHub-hosted Mac, so you can catch iOS build errors without owning one.
+# Library builds need no signing or provisioning.
+name: build
 
 on:
-  workflow_dispatch:
   push:
-    branches: [master]
   pull_request:
-    branches: [master]
+  workflow_dispatch:
 
-jobs: 
-  build:
-    name: Build
-    runs-on: windows-2022
+jobs:
+  ios:
+    runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install workload
-      run: dotnet workload install maui
-    - name: Setup Java SDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: 17
-    - name: Build
-      run: dotnet build -c Release
+      - uses: actions/checkout@v4
+
+      # The .NET 10 iOS workload requires a specific Xcode. If the default Xcode on the runner
+      # is older, select the right one (check `ls /Applications | grep Xcode` in a debug step).
+      # - run: sudo xcode-select -s /Applications/Xcode_26.0.app
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore workloads
+        run: dotnet workload restore Mopups/Mopups.Maui/Mopups.csproj
+
+      - name: Build iOS
+        run: dotnet build Mopups/Mopups.Maui/Mopups.csproj -c Release -f net10.0-ios
+
+      - name: Build Android
+        run: dotnet build Mopups/Mopups.Maui/Mopups.csproj -c Release -f net10.0-android

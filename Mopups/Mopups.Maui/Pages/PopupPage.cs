@@ -23,6 +23,10 @@ public class PopupPage : ContentPage
         set => SetValue(IsAnimationEnabledProperty, value);
     }
 
+    /// <summary>
+    /// When true (default), <see cref="ContentPage.Padding"/> is owned by Mopups and set from
+    /// <see cref="SystemPadding"/>. Put your own spacing on the content's Margin instead.
+    /// </summary>
     public static readonly BindableProperty HasSystemPaddingProperty = BindableProperty.Create(nameof(HasSystemPadding), typeof(bool), typeof(PopupPage), true);
     public bool HasSystemPadding
     {
@@ -65,6 +69,10 @@ public class PopupPage : ContentPage
         set => SetValue(BackgroundInputTransparentProperty, value);
     }
 
+    /// <summary>
+    /// When true (default), the bottom padding grows to at least <see cref="KeyboardOffset"/>
+    /// so the content stays above the soft keyboard.
+    /// </summary>
     public static readonly BindableProperty HasKeyboardOffsetProperty = BindableProperty.Create(nameof(HasKeyboardOffset), typeof(bool), typeof(PopupPage), true);
     public bool HasKeyboardOffset
     {
@@ -106,7 +114,7 @@ public class PopupPage : ContentPage
     }
 
     protected override bool OnBackButtonPressed() => false;
-    
+
     protected override void OnPropertyChanged(string? propertyName = null)
     {
         base.OnPropertyChanged(propertyName);
@@ -117,68 +125,36 @@ public class PopupPage : ContentPage
             case nameof(HasKeyboardOffset):
             case nameof(SystemPaddingSides):
             case nameof(SystemPadding):
-                ForceLayout();
+            case nameof(KeyboardOffset):
+                ApplySystemPadding();
                 break;
-                //case nameof(IsAnimating):
-                //    IsAnimationEnabled = IsAnimating;
-                //    break;
-                //case nameof(IsAnimationEnabled):
-                //    IsAnimating = IsAnimationEnabled;
-                //    break;
         }
     }
 
-    protected override Size ArrangeOverride(Rect bounds)
-    {
-        return base.ArrangeOverride(bounds);
-    }
-
-    protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
-    {
-        return base.MeasureOverride(widthConstraint, heightConstraint);
-    }
-
     /// <summary>
-    /// LayoutChildren is not working.. Maui Bug???
+    /// Replaces the old one-shot "apply padding after AddAsync" hack in PopupNavigation and the
+    /// commented-out LayoutChildren override. Runs every time the platform reports new insets,
+    /// so rotation and keyboard show/hide are handled on both platforms.
     /// </summary>
+    private void ApplySystemPadding()
+    {
+        if (!HasSystemPadding && !HasKeyboardOffset)
+            return;
 
-    //protected override void LayoutChildren(double x, double y, double width, double height)
-    //{
-    //    if (HasSystemPadding)
-    //    {
-    //        var systemPadding = SystemPadding;
-    //        var systemPaddingSide = SystemPaddingSides;
-    //        var left = 0d;
-    //        var top = 0d;
-    //        var right = 0d;
-    //        var bottom = 0d;
+        var system = HasSystemPadding ? SystemPadding : default;
+        var sides = SystemPaddingSides;
 
-    //        if (systemPaddingSide.HasFlag(PaddingSide.Left))
-    //            left = systemPadding.Left;
-    //        if (systemPaddingSide.HasFlag(PaddingSide.Top))
-    //            top = systemPadding.Top;
-    //        if (systemPaddingSide.HasFlag(PaddingSide.Right))
-    //            right = systemPadding.Right;
-    //        if (systemPaddingSide.HasFlag(PaddingSide.Bottom))
-    //            bottom = systemPadding.Bottom;
+        var left = sides.HasFlag(PaddingSide.Left) ? system.Left : 0;
+        var top = sides.HasFlag(PaddingSide.Top) ? system.Top : 0;
+        var right = sides.HasFlag(PaddingSide.Right) ? system.Right : 0;
+        var bottom = sides.HasFlag(PaddingSide.Bottom) ? system.Bottom : 0;
 
-    //        x += left;
-    //        y += top;
-    //        width -= left + right;
+        if (HasKeyboardOffset)
+            bottom = Math.Max(bottom, KeyboardOffset);
 
-    //        if (HasKeyboardOffset)
-    //            height -= top + Math.Max(bottom, KeyboardOffset);
-    //        else
-    //            height -= top + bottom;
-    //    }
-    //    else if (HasKeyboardOffset)
-    //    {
-    //        height -= KeyboardOffset;
-    //    }
-
-    //    base.LayoutChildren(x, y, width, height);
-    //}
-
+        // Thickness has value equality, so an unchanged value doesn't trigger another layout pass.
+        Padding = new Thickness(left, top, right, bottom);
+    }
 
     #region Animation Methods
 
@@ -238,25 +214,13 @@ public class PopupPage : ContentPage
     {
     }
 
-    protected virtual Task OnAppearingAnimationBeginAsync()
-    {
-        return Task.FromResult(0);
-    }
+    protected virtual Task OnAppearingAnimationBeginAsync() => Task.CompletedTask;
 
-    protected virtual Task OnAppearingAnimationEndAsync()
-    {
-        return Task.FromResult(0);
-    }
+    protected virtual Task OnAppearingAnimationEndAsync() => Task.CompletedTask;
 
-    protected virtual Task OnDisappearingAnimationBeginAsync()
-    {
-        return Task.FromResult(0);
-    }
+    protected virtual Task OnDisappearingAnimationBeginAsync() => Task.CompletedTask;
 
-    protected virtual Task OnDisappearingAnimationEndAsync()
-    {
-        return Task.FromResult(0);
-    }
+    protected virtual Task OnDisappearingAnimationEndAsync() => Task.CompletedTask;
 
     #endregion
 

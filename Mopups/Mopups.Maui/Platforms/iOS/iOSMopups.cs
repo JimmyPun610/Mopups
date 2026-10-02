@@ -1,138 +1,139 @@
-﻿using Mopups.Interfaces;
+﻿using Microsoft.Maui.Platform;
+using Mopups.Contracts;
 using Mopups.Pages;
-using Mopups.Platforms.iOS;
-
 using UIKit;
-namespace Mopups.iOS.Implementation;
 
-internal class iOSMopups : IPopupPlatform
+namespace Mopups.Platforms.iOS;
+
+/// <summary>
+/// Hosts each popup in its own <see cref="PopupWindow"/> stacked above the app window.
+/// The popup page's view controller is embedded as a child of <see cref="PopupRootViewController"/>
+/// (no modal presentation), so there is no present/dismiss dance and no artificial delays.
+/// </summary>
+internal sealed class iOSMopups : IPopupPlatform
 {
-    // It's necessary because GC in Xamarin.iOS 13 removes all UIWindow if there are not any references to them. See #459
-    private readonly List<UIWindow> _windows = new List<UIWindow>();
+    // Strong references are required: UIKit tears down windows nobody holds on to (upstream #459).
+    private readonly Dictionary<PopupPage, PopupWindow> _windows = [];
 
-
-    private static bool IsiOS13OrNewer => UIDevice.CurrentDevice.CheckSystemVersion(13, 0);
-
+    // Stacking order, topmost last. Used for window levels and for restoring key status.
+    private readonly List<PopupWindow> _order = [];
 
     public Task AddAsync(PopupPage page)
     {
-        var mainPage = Application.Current.MainPage;
-        mainPage.AddLogicalChild(page);
+        ArgumentNullException.ThrowIfNull(page);
 
-        var keyWindow = GetKeyWindow(UIApplication.SharedApplication);
-        if (keyWindow?.WindowLevel == UIWindowLevel.Normal)
-            keyWindow.WindowLevel = -1;
+        if (_windows.ContainsKey(page))
+            return Task.CompletedTask;
 
-        var handler = (page.Handler ??= new PopupPageHandler(page.Parent.Handler.MauiContext)) as PopupPageHandler;
+        var mauiWindow = ResolveHostWindow()
+            ?? throw new InvalidOperationException("No MAUI window is available to host the popup.");
 
-        PopupWindow window;
+        var context = mauiWindow.Handler?.MauiContext
+            ?? throw new InvalidOperationException("The host window has no MauiContext.");
 
-        if (IsiOS13OrNewer)
+        var hostWindow = mauiWindow.Handler?.PlatformView as UIWindow;
+        var scene = hostWindow?.WindowScene ?? ResolveForegroundScene()
+            ?? throw new InvalidOperationException("No foreground UIWindowScene is available to host the popup.");
+
+        // Put the popup in the logical tree so app-level StaticResource/DynamicResource lookups resolve.
+        mauiWindow.Page?.AddLogicalChild(page);
+
+        var handler = (IPlatformViewHandler)page.ToHandler(context);
+        var pageController = handler.ViewController
+            ?? throw new InvalidOperationException("PageHandler did not produce a UIViewController.");
+
+        var window = new PopupWindow(scene, page, hostWindow)
         {
-            var connectedScene = UIApplication.SharedApplication.ConnectedScenes.ToArray()
-                .Where(scene => scene.Session.Role == UIWindowSceneSessionRole.Application)
-                .FirstOrDefault(x => x.ActivationState == UISceneActivationState.ForegroundActive);
+            BackgroundColor = UIColor.Clear,
+            // Above the app window, below MAUI's DisplayAlert window (UIWindowLevel.Alert + 1).
+            WindowLevel = UIWindowLevel.Normal + _order.Count + 1,
+            RootViewController = new PopupRootViewController(page, pageController, hostWindow),
+        };
 
-            if (connectedScene != null && connectedScene is UIWindowScene windowScene)
-                window = new PopupWindow(windowScene);
-            else
-                window = new PopupWindow();
+        _windows[page] = window;
+        _order.Add(window);
 
-            _windows.Add(window);
-        }
-        else
-            window = new PopupWindow();
-
-        window.BackgroundColor = UIColor.Clear;
-        window.RootViewController = new PopupPageRenderer(handler);
-
-        if (window.RootViewController.View != null)
-            window.RootViewController.View.BackgroundColor = UIColor.Clear;
-
-        window.WindowLevel = UIWindowLevel.Normal;
         window.MakeKeyAndVisible();
 
-        handler.ViewController.ModalPresentationStyle = UIModalPresentationStyle.OverCurrentContext;
-        handler.ViewController.ModalTransitionStyle = UIModalTransitionStyle.CoverVertical;
+        // Force a layout pass now so the page has a real size and SystemPadding is populated
+        // before Appearing animations read Width/Height (MoveAnimation/ScaleAnimation offsets).
+        window.RootViewController.View?.LayoutIfNeeded();
 
-
-        return window.RootViewController.PresentViewControllerAsync(handler.ViewController, false);
-
-        UIWindow GetKeyWindow(UIApplication application)
-        {
-            if (!IsiOS13OrNewer)
-                return UIApplication.SharedApplication.KeyWindow;
-
-            var window = application
-                .ConnectedScenes
-                .ToArray()
-                .OfType<UIWindowScene>()
-                .Where(scene => scene.Session.Role == UIWindowSceneSessionRole.Application)
-                .SelectMany(scene => scene.Windows)
-                .FirstOrDefault(window => window.IsKeyWindow);
-
-            return window;
-        }
+        return Task.CompletedTask;
     }
 
-    public async Task RemoveAsync(PopupPage page)
+    public Task RemoveAsync(PopupPage page)
     {
-        if (page == null)
-            throw new Exception("Popup page is null");
+        ArgumentNullException.ThrowIfNull(page);
 
-        var handler = page.Handler as PopupPageHandler;
-        var viewController = handler?.ViewController;
+        if (!_windows.Remove(page, out var window))
+            return Task.CompletedTask;
 
-        await Task.Delay(50);
+        _order.Remove(window);
+        var hostWindow = window.HostWindow;
 
-        if (handler != null && viewController != null && !viewController.IsBeingDismissed)
+        // Detach while handlers are still connected: removing the page view from the window
+        // is what makes MAUI raise Page.Unloaded (MvvmEssentials' PageFactory listens to it).
+        if (window.RootViewController is PopupRootViewController root)
         {
-            var window = viewController.View?.Window;
-            page.Parent?.RemoveLogicalChild(page);
-
-            if (window != null)
-            {
-                var rvc = window.RootViewController;
-
-                if (rvc != null)
-                {
-                    await rvc.DismissViewControllerAsync(false);
-                    DisposeModelAndChildrenHandlers(page);
-                    rvc.Dispose();
-                }
-
-                window.RootViewController = null;
-                window.Hidden = true;
-
-                if (IsiOS13OrNewer && _windows.Contains(window))
-                    _windows.Remove(window);
-
-                window.Dispose();
-                window = null;
-            }
-
-            if (_windows.Count > 0)
-                _windows.Last().WindowLevel = UIWindowLevel.Normal;
-            else if (UIApplication.SharedApplication.KeyWindow.WindowLevel == -1)
-                UIApplication.SharedApplication.KeyWindow.WindowLevel = UIWindowLevel.Normal;
+            root.DetachPage();
+            window.RootViewController = null;
+            root.Dispose();
         }
+
+        window.Hidden = true;
+        window.Dispose();
+
+        DisconnectHandlers(page);
+        page.Parent?.RemoveLogicalChild(page);
+
+        RestoreKeyWindow(hostWindow);
+
+        return Task.CompletedTask;
     }
 
-    private static void DisposeModelAndChildrenHandlers(VisualElement view)
+    private void RestoreKeyWindow(UIWindow? hostWindow)
     {
-        foreach (var descendant in view.GetVisualTreeDescendants())
+        if (_order.Count > 0)
+            _order[^1].MakeKeyWindow();
+        else
+            hostWindow?.MakeKeyWindow();
+    }
+
+    private static Window? ResolveHostWindow()
+    {
+        var windows = Application.Current?.Windows;
+        if (windows is null || windows.Count == 0)
+            return null;
+
+        // Popup windows may currently be key, so fall back to the foreground scene's window.
+        return windows.FirstOrDefault(w => (w.Handler?.PlatformView as UIWindow)?.IsKeyWindow == true)
+            ?? windows.FirstOrDefault(w => (w.Handler?.PlatformView as UIWindow)?.WindowScene?.ActivationState
+                == UISceneActivationState.ForegroundActive)
+            ?? windows[0];
+    }
+
+    private static UIWindowScene? ResolveForegroundScene() =>
+        UIApplication.SharedApplication.ConnectedScenes
+            .ToArray()
+            .OfType<UIWindowScene>()
+            .Where(s => s.Session.Role == UIWindowSceneSessionRole.Application)
+            .OrderByDescending(s => s.ActivationState == UISceneActivationState.ForegroundActive)
+            .FirstOrDefault();
+
+    private static void DisconnectHandlers(PopupPage page)
+    {
+        // Children first, then the page. Only disconnect: the native views are owned by the
+        // handlers, and disposing them by hand (as the old code did) can crash on reuse.
+        var descendants = page.GetVisualTreeDescendants();
+        for (var i = descendants.Count - 1; i >= 0; i--)
         {
-            if (descendant is IElement child)
-            {
-                IElementHandler handler = child.Handler;
-                child?.Handler?.DisconnectHandler();
-                (handler?.PlatformView as UIView)?.RemoveFromSuperview();
-                (handler?.PlatformView as UIView)?.Dispose();
-            }
+            if (ReferenceEquals(descendants[i], page))
+                continue;
+
+            (descendants[i] as IElement)?.Handler?.DisconnectHandler();
         }
 
-        view?.Handler?.DisconnectHandler();
-        (view?.Handler?.PlatformView as UIView)?.RemoveFromSuperview();
-        (view?.Handler?.PlatformView as UIView)?.Dispose();
+        page.Handler?.DisconnectHandler();
     }
 }

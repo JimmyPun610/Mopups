@@ -1,7 +1,12 @@
-﻿using Microsoft.Maui.LifecycleEvents;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Maui.LifecycleEvents;
+using Mopups.Contracts;
+using Mopups.Services;
+#if ANDROID
 using Mopups.Pages;
 using Mopups.Platforms.Android.Handler;
 using Mopups.Platorms.Android.Impl;
+#endif
 
 namespace Mopups.Hosting;
 
@@ -11,65 +16,31 @@ namespace Mopups.Hosting;
 public static class AppHostBuilderExtensions
 {
     /// <summary>
-    /// Automatically sets up lifecycle events and Maui Handlers
+    /// Sets up lifecycle events, Maui handlers and registers <see cref="IPopupNavigation"/> in DI.
     /// </summary>
-    /// <param name="builder"></param>
-    /// <returns></returns>
-    public static MauiAppBuilder ConfigureMopups(this MauiAppBuilder builder)
+    /// <param name="builder">The app builder.</param>
+    /// <param name="backPressHandler">Optional Android back-press logic to run when no popup is open.</param>
+    public static MauiAppBuilder ConfigureMopups(this MauiAppBuilder builder, Action? backPressHandler = null)
     {
+        builder.Services.TryAddSingleton<IPopupNavigation>(_ => MopupService.Instance);
+
+#if ANDROID
         builder
             .ConfigureLifecycleEvents(lifecycle =>
             {
-#if ANDROID
-                lifecycle.AddAndroid(d =>
-                {
-                    d.OnBackPressed(activity => AndroidMopups.SendBackPressed());
-                });
-
-#endif
+                lifecycle.AddAndroid(android =>
+                    android.OnBackPressed(_ => AndroidMopups.SendBackPressed(backPressHandler)));
             })
             .ConfigureMauiHandlers(handlers =>
             {
-#if ANDROID
                 handlers.AddHandler(typeof(PopupPage), typeof(PopupPageHandler));
-#endif
-#if IOS
-                handlers.AddHandler(typeof(PopupPage), typeof(Platforms.iOS.PopupPageHandler));
-#endif
             });
+#endif
+        // iOS: no custom handler. MAUI Controls registers AddHandler<Page, PageHandler>() and resolves a
+        // virtual view to its closest registered base type, so PopupPage gets PageHandler. On iOS that
+        // handler exposes a PageViewController (IPlatformViewHandler.ViewController), which iOSMopups
+        // embeds as a child of PopupRootViewController.
+
         return builder;
     }
-
-
-    /// <summary>
-    /// Automatically sets up lifecycle events and maui handlers, with the additional option to have additional back press logic
-    /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="backPressHandler"></param>
-    /// <returns></returns>
-    public static MauiAppBuilder ConfigureMopups(this MauiAppBuilder builder, Action? backPressHandler)
-    {
-        builder
-            .ConfigureLifecycleEvents(lifecycle =>
-            {
-#if ANDROID
-                lifecycle.AddAndroid(d =>
-                {
-                    
-                    d.OnBackPressed(_ => AndroidMopups.SendBackPressed(backPressHandler));
-                });
-#endif
-            })
-            .ConfigureMauiHandlers(handlers =>
-            {
-#if ANDROID
-                handlers.AddHandler(typeof(PopupPage), typeof(PopupPageHandler));
-#endif
-#if IOS
-                handlers.AddHandler(typeof(PopupPage), typeof(Platforms.iOS.PopupPageHandler));
-#endif
-            });
-        return builder;
-    }
-
 }
