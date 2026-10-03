@@ -1,11 +1,11 @@
 ﻿using System.Windows.Input;
-using Mopups.Animations;
-using Mopups.Animations.Base;
-using Mopups.Enums;
-using Mopups.Services;
 using Nkraft.CrossUtility.Extensions;
+using Nkraft.Mopups.Animations;
+using Nkraft.Mopups.Animations.Base;
+using Nkraft.Mopups.Enums;
+using Nkraft.Mopups.Services;
 
-namespace Mopups.Pages;
+namespace Nkraft.Mopups.Pages;
 
 public class PopupPage : ContentPage
 {
@@ -24,7 +24,7 @@ public class PopupPage : ContentPage
     }
 
     /// <summary>
-    /// When true (default), <see cref="ContentPage.Padding"/> is owned by Mopups and set from
+    /// When true (default), <see cref="ContentPage.Padding"/> is owned by Nkraft.Mopups and set from
     /// <see cref="SystemPadding"/>. Put your own spacing on the content's Margin instead.
     /// </summary>
     public static readonly BindableProperty HasSystemPaddingProperty = BindableProperty.Create(nameof(HasSystemPadding), typeof(bool), typeof(PopupPage), true);

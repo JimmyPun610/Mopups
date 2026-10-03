@@ -1,7 +1,7 @@
-﻿using Mopups.Events;
-using Mopups.Pages;
+﻿using Nkraft.Mopups.Events;
+using Nkraft.Mopups.Pages;
 
-namespace Mopups.Contracts;
+namespace Nkraft.Mopups.Contracts;
 
 public interface IPopupNavigation
 {

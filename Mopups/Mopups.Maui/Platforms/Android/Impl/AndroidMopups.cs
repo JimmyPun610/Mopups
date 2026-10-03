@@ -3,15 +3,15 @@ using Android.Widget;
 using AndroidX.Activity;
 using AndroidX.Fragment.App;
 using Microsoft.Maui.Platform;
-using Mopups.Contracts;
-using Mopups.Extensions;
-using Mopups.Pages;
-using Mopups.Platforms.Android.Handler;
-using Mopups.Services;
 using Nkraft.CrossUtility.Extensions;
+using Nkraft.Mopups.Contracts;
+using Nkraft.Mopups.Extensions;
+using Nkraft.Mopups.Pages;
+using Nkraft.Mopups.Platforms.Android.Handler;
+using Nkraft.Mopups.Services;
 using View = Android.Views.View;
 
-namespace Mopups.Platorms.Android.Impl;
+namespace Nkraft.Mopups.Platforms.Android;
 
 public class AndroidMopups : IPopupPlatform
 {
@@ -78,7 +78,7 @@ public class AndroidMopups : IPopupPlatform
         return PostAsync(DecorView);
     }
 
-    //! important keeps reference to pages that accessibility has applied to. This is so accessibility can be removed properly when popup is removed. #https://github.com/LuckyDucko/Mopups/issues/93
+    //! important keeps reference to pages that accessibility has applied to. This is so accessibility can be removed properly when popup is removed. #https://github.com/LuckyDucko/Nkraft.Mopups/issues/93
     private readonly Dictionary<Type, List<View>> _accessibilityStates = new();
 
     private void HandleAccessibility(bool showPopup, bool disableAccessibilityHandling, PopupPage popup)

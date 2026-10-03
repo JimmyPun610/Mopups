@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using Nkraft.Mopups.Pages;
 
-using Mopups.Pages;
-
-namespace Mopups.Animations.Base;
+namespace Nkraft.Mopups.Animations.Base;
 
 public class EasingTypeConverter : TypeConverter
 {

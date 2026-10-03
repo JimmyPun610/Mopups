@@ -1,6 +1,6 @@
-﻿using Mopups.Pages;
+﻿using Nkraft.Mopups.Pages;
 
-namespace Mopups.Animations.Base;
+namespace Nkraft.Mopups.Animations.Base;
 
 public abstract class FadeBackgroundAnimation : BaseAnimation
 {

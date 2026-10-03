@@ -1,9 +1,9 @@
 ﻿
 using System.ComponentModel;
-using Mopups.Enums;
-using Mopups.Pages;
+using Nkraft.Mopups.Enums;
+using Nkraft.Mopups.Pages;
 
-namespace Mopups.Animations;
+namespace Nkraft.Mopups.Animations;
 
 public class ScaleAnimation : FadeAnimation
 {

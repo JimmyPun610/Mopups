@@ -1,8 +1,8 @@
 ﻿using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using Mopups.Platforms.Android.Handler;
+using Nkraft.Mopups.Platforms.Android.Handler;
 
-namespace Mopups.Platforms.Android.Handler;
+namespace Nkraft.Mopups.Platforms.Android.Handler;
 
 public sealed class PopupPageHandler : PageHandler
 {

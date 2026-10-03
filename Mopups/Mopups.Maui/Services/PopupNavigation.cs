@@ -1,12 +1,15 @@
-﻿using Mopups.Animations;
-using Mopups.Contracts;
-using Mopups.Events;
-using Mopups.Pages;
+﻿using Nkraft.Mopups.Animations;
+using Nkraft.Mopups.Contracts;
+using Nkraft.Mopups.Events;
+using Nkraft.Mopups.Pages;
+
 #if ANDROID
-using Mopups.Platorms.Android.Impl;
+using Nkraft.Mopups.Platforms.Android;
+#elif IOS
+using Nkraft.Mopups.Platforms.iOS;
 #endif
 
-namespace Mopups.Services;
+namespace Nkraft.Mopups.Services;
 
 public class PopupNavigation : IPopupNavigation
 {
@@ -32,7 +35,7 @@ public class PopupNavigation : IPopupNavigation
 #if ANDROID
         return new AndroidMopups();
 #elif IOS
-        return new Mopups.Platforms.iOS.iOSMopups();
+        return new iOSMopups();
 #else
         throw new PlatformNotSupportedException();
 #endif

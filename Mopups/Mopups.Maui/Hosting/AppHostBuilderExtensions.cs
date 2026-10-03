@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Maui.LifecycleEvents;
-using Mopups.Contracts;
-using Mopups.Services;
+using Nkraft.Mopups.Contracts;
+using Nkraft.Mopups.Pages;
+using Nkraft.Mopups.Services;
+
 #if ANDROID
-using Mopups.Pages;
-using Mopups.Platforms.Android.Handler;
-using Mopups.Platorms.Android.Impl;
+using Nkraft.Mopups.Platforms.Android;
+using Nkraft.Mopups.Platforms.Android.Handler;
 #endif
 
-namespace Mopups.Hosting;
+namespace Nkraft.Mopups.Hosting;
 
 /// <summary>
 /// Represents application host extension, that used to configure handlers defined in Mopups.

@@ -1,9 +1,9 @@
 using CoreGraphics;
 using Foundation;
-using Mopups.Pages;
+using Nkraft.Mopups.Pages;
 using UIKit;
 
-namespace Mopups.Platforms.iOS;
+namespace Nkraft.Mopups.Platforms.iOS;
 
 /// <summary>
 /// Root controller of a <see cref="PopupWindow"/>. Embeds the MAUI page controller as a child,

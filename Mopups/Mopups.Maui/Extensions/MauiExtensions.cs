@@ -1,4 +1,4 @@
-namespace Mopups.Extensions;
+namespace Nkraft.Mopups.Extensions;
 
 internal static class MauiExtensions
 {

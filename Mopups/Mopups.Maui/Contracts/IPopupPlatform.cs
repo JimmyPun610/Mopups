@@ -1,6 +1,6 @@
-﻿using Mopups.Pages;
+﻿using Nkraft.Mopups.Pages;
 
-namespace Mopups.Contracts;
+namespace Nkraft.Mopups.Contracts;
 
 public interface IPopupPlatform
 {

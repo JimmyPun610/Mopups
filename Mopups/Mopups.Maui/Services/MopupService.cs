@@ -1,6 +1,6 @@
-﻿using Mopups.Contracts;
+﻿using Nkraft.Mopups.Contracts;
 
-namespace Mopups.Services;
+namespace Nkraft.Mopups.Services;
 
 public static class MopupService
 {

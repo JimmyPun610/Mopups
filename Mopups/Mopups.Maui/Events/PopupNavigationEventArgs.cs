@@ -1,6 +1,6 @@
-﻿using Mopups.Pages;
+﻿using Nkraft.Mopups.Pages;
 
-namespace Mopups.Events;
+namespace Nkraft.Mopups.Events;
 
 public class PopupNavigationEventArgs(PopupPage page, bool isAnimated) : EventArgs
 {

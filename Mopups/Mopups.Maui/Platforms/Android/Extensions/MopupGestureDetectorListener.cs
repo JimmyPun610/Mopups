@@ -1,6 +1,6 @@
 ﻿using Android.Views;
 
-namespace Mopups.Droid.Gestures;
+namespace Nkraft.Mopups.Droid.Gestures;
 
 internal class MopupGestureDetectorListener : GestureDetector.SimpleOnGestureListener
 {

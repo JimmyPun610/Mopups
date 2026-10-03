@@ -7,6 +7,7 @@
 		<UseMauiEssentials>true</UseMauiEssentials>
 		<SingleProject>true</SingleProject>
 		<PackageId>Nkraft.Mopups</PackageId>
+    <RootNamespace>Nkraft.Mopups</RootNamespace>
 		<Description>Fork of Mopups (LuckyDucko/Mopups) maintained for Android and iOS only</Description>
 		<PackageProjectUrl>https://github.com/mr5z/Mopups</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mr5z/Mopups</RepositoryUrl>
@@ -23,7 +24,7 @@
     <Authors>Mark L, Tyson Hooker, Maksym Koshovyi, Aswin P G, Kirill Lyubimov, Martijn Van Dijk, Shane Neuville</Authors>
 		<Company>Nkraft</Company>
 		<PackageTags>Nkraft.Mopups;Mopups;Popups;Maui;rg;Xamarin;ios;android;Dialogs</PackageTags>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Title>Nkraft.Mopups (MAUI Popups)</Title>
 		<PackageReleaseNotes>Mobile-only Mopups</PackageReleaseNotes>
 		<IncludeSymbols>True</IncludeSymbols>
@@ -33,10 +34,7 @@
 	<ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
     <PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.110" />
-	</ItemGroup>
-  
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\CrossUtility\src\Nkraft.CrossUtility.csproj" />
+    <PackageReference Include="Nkraft.CrossUtility" Version="1.0.11.1" />
 	</ItemGroup>
   
   <ItemGroup>

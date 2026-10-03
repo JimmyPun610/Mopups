@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Mopups.Animations;
+namespace Nkraft.Mopups.Animations;
 
 public static class AnimationHelper
 {

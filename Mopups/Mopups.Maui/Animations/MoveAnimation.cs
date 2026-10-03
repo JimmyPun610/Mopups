@@ -1,10 +1,10 @@
 ﻿
 using System.ComponentModel;
-using Mopups.Animations.Base;
-using Mopups.Enums;
-using Mopups.Pages;
+using Nkraft.Mopups.Animations.Base;
+using Nkraft.Mopups.Enums;
+using Nkraft.Mopups.Pages;
 
-namespace Mopups.Animations;
+namespace Nkraft.Mopups.Animations;
 
 public class MoveAnimation : FadeBackgroundAnimation
 {

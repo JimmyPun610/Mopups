@@ -1,9 +1,9 @@
 ﻿using Microsoft.Maui.Platform;
-using Mopups.Contracts;
-using Mopups.Pages;
+using Nkraft.Mopups.Contracts;
+using Nkraft.Mopups.Pages;
 using UIKit;
 
-namespace Mopups.Platforms.iOS;
+namespace Nkraft.Mopups.Platforms.iOS;
 
 /// <summary>
 /// Hosts each popup in its own <see cref="PopupWindow"/> stacked above the app window.

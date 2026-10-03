@@ -1,8 +1,8 @@
 ﻿using CoreGraphics;
-using Mopups.Pages;
+using Nkraft.Mopups.Pages;
 using UIKit;
 
-namespace Mopups.Platforms.iOS;
+namespace Nkraft.Mopups.Platforms.iOS;
 
 internal sealed class PopupWindow : UIWindow
 {

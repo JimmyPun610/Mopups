@@ -1,13 +1,13 @@
 ﻿using Android.Content;
 using Android.OS;
 using Microsoft.Maui.Platform;
-using Mopups.Droid.Gestures;
-using Mopups.Pages;
+using Nkraft.Mopups.Droid.Gestures;
+using Nkraft.Mopups.Pages;
 using AndroidGraphics = Android.Graphics; //Weird conflict with Microsoft namespace?
 using AndroidView = Android.Views;
 using Rect = Microsoft.Maui.Graphics.Rect;
 
-namespace Mopups.Platforms.Android.Handler;
+namespace Nkraft.Mopups.Platforms.Android.Handler;
 
 public class PopupPageRenderer : ContentViewGroup
 {
