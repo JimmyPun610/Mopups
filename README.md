@@ -2,9 +2,9 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Nkraft.Mopups.svg)](https://www.nuget.org/packages/Nkraft.Mopups/)
 
-Popups for .NET MAUI on Android and iOS.
+A minimal popup page for .NET MAUI on Android and iOS.
 
-A fork of [Mopups](https://github.com/LuckyDucko/Mopups), maintained for [Nkraft.MvvmEssentials](https://github.com/mr5z/MvvmEssentials).
+A fork of [Mopups](https://github.com/LuckyDucko/Mopups), trimmed down to just the popup page and its navigation.
 
 ## Requirements
 
