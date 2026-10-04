@@ -34,7 +34,7 @@ jobs:
           xcodebuild -version
 
       - name: Build iOS
-        run: dotnet build Mopups/Mopups.Maui/Mopups.csproj -c Release -f net10.0-ios
+        run: dotnet build src/Nkraft.Mopups.csproj -c Release -f net10.0-ios
 
       - name: Build Android
-        run: dotnet build Mopups/Mopups.Maui/Mopups.csproj -c Release -f net10.0-android
+        run: dotnet build src/Nkraft.Mopups.csproj -c Release -f net10.0-android
