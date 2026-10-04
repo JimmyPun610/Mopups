@@ -16,7 +16,6 @@ public class PopupPage : ContentPage
     internal Task? DisappearingTransactionTask { get; set; }
 
     public static readonly BindableProperty IsAnimationEnabledProperty = BindableProperty.Create(nameof(IsAnimationEnabled), typeof(bool), typeof(PopupPage), true);
-
     public bool IsAnimationEnabled
     {
         get => (bool)GetValue(IsAnimationEnabledProperty) && AnimationHelper.SystemAnimationsEnabled;

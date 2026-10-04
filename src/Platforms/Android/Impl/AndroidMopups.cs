@@ -46,8 +46,6 @@ public class AndroidMopups : IPopupPlatform
         HandleAccessibility(true, page.DisableAndroidAccessibilityHandling, page);
 
         page.Parent = IPlatformApplication.Current?.Application.Windows[0].Content as Element;
-        //var mainPage = (Element)MauiApplication.Current.Application.Windows[0].Content;
-        //mainPage.AddLogicalChild(page);
 
         if (page.Parent?.FindMauiContext() is { } context)
         {
@@ -78,15 +76,13 @@ public class AndroidMopups : IPopupPlatform
         return PostAsync(DecorView);
     }
 
-    //! important keeps reference to pages that accessibility has applied to. This is so accessibility can be removed properly when popup is removed. #https://github.com/LuckyDucko/Nkraft.Mopups/issues/93
+    //! important keeps reference to pages that accessibility has applied to. This is so accessibility can be removed properly when popup is removed. #https://github.com/LuckyDucko/Mopups/issues/93
     private readonly Dictionary<Type, List<View>> _accessibilityStates = new();
 
     private void HandleAccessibility(bool showPopup, bool disableAccessibilityHandling, PopupPage popup)
     {
         if(disableAccessibilityHandling)
-        {
             return;
-        }
 
         if(showPopup)
         {
@@ -165,10 +161,8 @@ public class AndroidMopups : IPopupPlatform
 
     static Task<bool> PostAsync(View? nativeView)
     {
-        if(nativeView == null)
-        {
+        if(nativeView is null)
             return Task.FromResult(true);
-        }
 
         var tcs = new TaskCompletionSource<bool>();
 
@@ -180,34 +174,26 @@ public class AndroidMopups : IPopupPlatform
     static FrameLayout? GetTopFragmentDecorView()
     {
         if (Platform.CurrentActivity is not ComponentActivity componentActivity)
-        {
             return null;
-        }
 
         var fragments = componentActivity.GetFragmentManager()?.Fragments;
         
         if (fragments is null || !fragments.Any())
-        {
             return Platform.CurrentActivity?.Window?.DecorView as FrameLayout;;
-        }
 
         var topFragment = fragments[^1];
 
         if (topFragment is DialogFragment dialogFragment)
-        {
             return dialogFragment.Dialog?.Window?.DecorView as FrameLayout;
-        }
 
         return topFragment.Activity?.Window?.DecorView as FrameLayout;
     }
 
     private static IList<FrameLayout?> GetAllFragmentDecorViews()
     {
-        IList<FrameLayout?> decorViews = new List<FrameLayout?>();
+        var decorViews = new List<FrameLayout?>();
         if (Platform.CurrentActivity is not ComponentActivity componentActivity)
-        {
             return decorViews;
-        }
 
         var fragments = componentActivity.GetFragmentManager()?.Fragments;
 

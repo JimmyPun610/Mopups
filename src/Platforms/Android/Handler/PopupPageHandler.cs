@@ -6,8 +6,6 @@ namespace Nkraft.Mopups.Platforms.Android.Handler;
 
 public sealed class PopupPageHandler : PageHandler
 {
-    private bool _disposed;
-
     public PopupPageHandler()
     {
         SetMauiContext(MauiApplication.Current.Application.Windows[0].Handler.MauiContext);
@@ -29,7 +27,6 @@ public sealed class PopupPageHandler : PageHandler
     {
         return new PopupPageRenderer(Context);
     }
-
 
     protected override void DisconnectHandler(ContentViewGroup platformView)
     {

@@ -8,5 +8,5 @@
     <File Path=".github/workflows/build.yml" />
     <File Path=".github/workflows/codeql-analysis.yml" />
   </Folder>
-  <Project Path="Mopups\Mopups.Maui\Nkraft.Mopups.csproj" />
+  <Project Path="src\Nkraft.Mopups.csproj" />
 </Solution>

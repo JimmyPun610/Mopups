@@ -1,6 +1,6 @@
 ﻿using Android.Views;
 
-namespace Nkraft.Mopups.Droid.Gestures;
+namespace Nkraft.Mopups.Platforms.Android.Extensions;
 
 internal class MopupGestureDetectorListener : GestureDetector.SimpleOnGestureListener
 {
@@ -8,7 +8,8 @@ internal class MopupGestureDetectorListener : GestureDetector.SimpleOnGestureLis
 
     public override bool OnSingleTapUp(MotionEvent? e)
     {
-        if (e != null) Clicked?.Invoke(this, e);
+        if (e != null) 
+            Clicked?.Invoke(this, e);
 
         return false;
     }
