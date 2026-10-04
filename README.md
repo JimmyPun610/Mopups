@@ -4,7 +4,7 @@
 
 A minimal popup page for .NET MAUI on Android and iOS.
 
-A fork of [Mopups](https://github.com/LuckyDucko/Mopups), trimmed down to just the popup page and its navigation.
+A fork of [Mopups](https://github.com/LuckyDucko/Mopups), trimmed down to just the popup page and its navigation. The goal is to keep it small and keep fixing issues on iOS and Android.
 
 ## Requirements
 
